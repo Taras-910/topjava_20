@@ -33,7 +33,6 @@ public class InMemory implements RepositoryInterface {
     );
 
     public InMemory(){
-        log.debug("meals {}", meals.size());
         meals.forEach(meal -> {
             int id = counter.getAndIncrement();
             meal.setId(id);

@@ -31,12 +31,6 @@ public class MealServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        log.debug("redirect to meals doGet");
-/*
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
-//        response.sendRedirect("meals.jsp");
-*/
-
         String action = request.getParameter("action");
         log.debug("action {}",action);
 
@@ -50,27 +44,17 @@ public class MealServlet extends HttpServlet {
         } else if (action.equalsIgnoreCase("delete")) {
             int mealId = Integer.parseInt(request.getParameter("mealId"));
             mealService.delete(mealId);
-            List<MealTo> list = MealsUtil.filteredByStreams(mealService.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
-            request.setAttribute("meals", list);
-            request.setAttribute("formatter", TimeUtil.formatter);
-            RequestDispatcher view = request.getRequestDispatcher("meals.jsp");
-            view.forward(request, response);
+            response.sendRedirect("meals");
 
         } else if (action.equalsIgnoreCase("edit")) {
             int mealId = Integer.parseInt(request.getParameter("mealId"));
-            log.debug("mealId {}",mealId);
-
             Meal meal = mealService.getMealById(mealId);
-            log.debug("meal {}",meal.toString());
-
             request.setAttribute("meal", meal);
-//        request.getRequestDispatcher("/meals.jsp"). forward(request, response);
             RequestDispatcher view = request.getRequestDispatcher("mealsForm.jsp");
             view.forward(request, response);
 
         } else if (action.equalsIgnoreCase("create")) {
             request.setAttribute("meal", new Meal());
-//        request.getRequestDispatcher("/meals.jsp"). forward(request, response);
             RequestDispatcher view = request.getRequestDispatcher("mealsForm.jsp");
             view.forward(request, response);
         }
@@ -80,24 +64,18 @@ public class MealServlet extends HttpServlet {
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         log.debug("redirect to meals doPost");
+
         String mealId = request.getParameter("mealId");
         LocalDateTime dateTime = LocalDateTime.parse(request.getParameter("dateTime"));
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
         Meal meal = new Meal(dateTime, description, calories);
 
-        if(mealId == null || mealId.isEmpty()){
-            mealService.add(meal);
-        }
+        if(mealId == null || mealId.isEmpty()) mealService.add(meal);
         else {
             meal.setId(Integer.parseInt(mealId));
             mealService.update(meal, Integer.parseInt(mealId));
         }
-
-        List<MealTo> list = MealsUtil.filteredByStreams(mealService.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
-        request.setAttribute("meals", list);
-        request.setAttribute("formatter", TimeUtil.formatter);
-        RequestDispatcher view = request.getRequestDispatcher("meals.jsp");
-        view.forward(request, response);
+        response.sendRedirect("meals");
     }
 }

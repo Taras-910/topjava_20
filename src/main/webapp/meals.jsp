@@ -34,12 +34,11 @@
             <td><c:out value="${meal.description}" /></td>
             <td><c:out value="${meal.calories}" /></td>
             <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}"/>">¬ª¬Ù¬Þ¬Ö¬ß¬Ú¬ä¬î</a></td>
-            <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">¬µ¬Õ¬Ñ¬Ý¬Ú¬ä¬î</a></td>
+            <td><a method="post" href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">¬µ¬Õ¬Ñ¬Ý¬Ú¬ä¬î</a></td>
         </tr>
     </c:forEach>
     </tbody>
+
 </table>
-
-
 </body>
 </html>
