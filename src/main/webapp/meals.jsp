@@ -27,6 +27,7 @@
     </thead>
 
     <tbody>
+    <jsp:useBean id="meal" class="ru.javawebinar.topjava.model.MealTo"/>
     <c:forEach items="${meals}" var="meal">
         <tr style="color:${meal.excess ? 'red' : 'green'}">
             <input type="hidden"<c:out value="${meal.id}" />>
