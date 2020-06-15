@@ -7,12 +7,8 @@
 <head>
     <title>Meal list</title>
     <style>
-        .normal {
-            color: green;
-        }
-
-        .excess {
-            color: red;
+        .hr {
+            display:inline-block;
         }
     </style>
 </head>
@@ -21,21 +17,46 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <a href="meals?action=create">Add Meal</a>
+    <form method="get">
+        <div>
+            <div class="hr">
+                <dl>От даты (включая):<input type="date" name="startDate"></dl>
+            </div>
+            <div class="hr">
+                <dl>От времени (включая): <input type="time" name="startTime"></dl>
+            </div>
+            <br/>
+            <div class="hr">
+                <dl>До даты (включая):<input type="date" name="endDate"></dl>
+            </div>
+            <div class="hr">
+                <dl>До времени (исключая):<input type="time" name="endTime"></dl>
+            </div>
+
+        </div>
+        <button type="submit">Фильтровать</button>
+        <button onclick="window.history.back()" type="button">Отменить</button>
+    </form>
+
+
+    <button><a href="meals?action=create">Add Meal</a></button>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
+            <%--<th>id</th>--%>
             <th>Date</th>
             <th>Description</th>
             <th>Calories</th>
+            <%--<th>userId</th>--%>
             <th></th>
             <th></th>
         </tr>
         </thead>
         <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
-            <tr class="${meal.excess ? 'excess' : 'normal'}">
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.To.MealTo"/>
+            <tr style="color:${meal.excess ? 'red' : 'green'}">
+                    <%--<td>${meal.id}</td>--%>
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
                         <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
@@ -44,6 +65,7 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
+                    <%--<td>${meal.userId}</td>--%>
                 <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
                 <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
             </tr>
@@ -52,3 +74,4 @@
 </section>
 </body>
 </html>
+

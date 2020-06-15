@@ -4,57 +4,54 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class Meal {
+public class Meal extends AbstractBaseEntity{
     private Integer id;
 
-    private final LocalDateTime dateTime;
+    private LocalDateTime dateTime;
 
-    private final String description;
+    private String description;
 
-    private final int calories;
+    private int calories;
+
+    private int userId;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this(null, dateTime, description, calories);
     }
 
     public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
-        this.id = id;
+        super(id);
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
     }
 
-    public Integer getId() {
-        return id;
+    public Meal(LocalDateTime dateTime, String description, int calories, int userId) {
+        this(null, dateTime, description, calories);
+        this.userId = userId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public Integer getId() { return id; }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
+    public void setId(Integer id) { this.id = id; }
 
-    public String getDescription() {
-        return description;
-    }
+    public LocalDateTime getDateTime() { return dateTime; }
 
-    public int getCalories() {
-        return calories;
-    }
+    public String getDescription() { return description; }
 
-    public LocalDate getDate() {
-        return dateTime.toLocalDate();
-    }
+    public int getCalories() { return calories; }
 
-    public LocalTime getTime() {
-        return dateTime.toLocalTime();
-    }
+    public LocalDate getDate() { return dateTime.toLocalDate(); }
 
-    public boolean isNew() {
-        return id == null;
-    }
+    public LocalTime getTime() { return dateTime.toLocalTime(); }
+
+    public int getUserId() { return userId; }
+
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public boolean isNew() { return id == null; }
 
     @Override
     public String toString() {
@@ -63,6 +60,8 @@ public class Meal {
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
+                ", userId=" + userId +
                 '}';
     }
 }
+
