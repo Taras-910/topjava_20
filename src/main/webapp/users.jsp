@@ -10,16 +10,18 @@
     </style>
 </head>
 <body>
+<ul>
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Users</h2>
+<%--
     <button><a href="users?action=create">Add User</a></button>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
-            <%--<td><input type="hidden" name="id">id</td>--%>
+            <td><input type="hidden" name="id">id</td>
             <th>Имя</th>
             <th>Почта</th>
             <th>Роли</th>
@@ -32,7 +34,7 @@
         <c:forEach items="${users}" var="user">
             <jsp:useBean id="user" type="ru.javawebinar.topjava.model.User"/>
             <br>
-            <%--<td><input type="hidden" name="id" value="${user.id}"></td>--%>
+            <td><input type="hidden" name="id" value="${user.id}"></td>
             <td>${user.name}</td>
             <td>${user.email}</td>
             <td>${user.roles}</td>
@@ -43,6 +45,8 @@
             </tr>
         </c:forEach>
     </table>
+--%>
 </section>
+</ul>
 </body>
 </html>

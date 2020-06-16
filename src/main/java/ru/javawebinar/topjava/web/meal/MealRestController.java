@@ -7,11 +7,13 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.To.MealTo;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.Collection;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.function.Predicate;
 
-import static java.time.LocalTime.*;
 import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenTimeHalfOpen;
 import static ru.javawebinar.topjava.util.MealsUtil.filterByPredicate;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
@@ -33,11 +35,12 @@ public class MealRestController {
         log.info("save(Meal meal) {}", meal);
         checkNew(meal);
         meal.setUserId(authUserId());
-        service.create(meal);
+        service.create(meal, authUserId());
     }
 
     public void update(Meal meal) {
         log.info("update {}", meal.toString());
+        meal.setUserId(authUserId());
         service.update(meal, authUserId());
     }
 
@@ -51,13 +54,14 @@ public class MealRestController {
         return service.get(id, authUserId());
     }
 
-    public Collection<MealTo> getAll(String startDate, String endDate, String startTime, String endTime) {
-        log.info("getAll(startDate, endDate,startTime, endTime) {} {} {} {}", startDate, endDate,startTime, endTime);
-
-        Predicate<Meal> filter = meal -> isBetweenTimeHalfOpen(meal.getTime(),
-                startTime == null || startTime.isEmpty() ? MIN : parse(startTime),
-                endTime == null || endTime.isEmpty() ? MAX : parse(endTime));
-
+    public List<MealTo> getAll(LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate) {
+        log.info("getAll(startDate, endDate,startTime, endTime) {} {} {} {}", startDate, endDate, startTime, endTime);
+        Predicate<Meal> filter = meal -> isBetweenTimeHalfOpen(meal.getTime(), startTime, endTime);
         return filterByPredicate(service.getAll(startDate, endDate, authUserId()), authUserCaloriesPerDay(), filter);
     }
+
+    public List<MealTo> getAll(){
+        return MealsUtil.getTos(service.getAll(authUserId()), authUserCaloriesPerDay(), meal -> true);
+    }
+
 }

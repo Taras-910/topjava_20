@@ -11,13 +11,15 @@
             display:inline-block;
         }
     </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
+<ul>
 <body>
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
-    <h2>Meals</h2>
-    <form method="get">
+    <h2>Моя еда</h2>
+    <form method="get" action="meals">
         <div>
             <div class="hr">
                 <dl>От даты (включая):<input type="date" name="startDate"></dl>
@@ -39,15 +41,15 @@
     </form>
 
 
-    <button><a href="meals?action=create">Add Meal</a></button>
+    <button><a href="meals?action=create"><i class="material-icons">add</i></a></button>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
             <%--<th>id</th>--%>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Calories</th>
+            <th>Дата/Время</th>
+            <th>Описание</th>
+            <th>Калории</th>
             <%--<th>userId</th>--%>
             <th></th>
             <th></th>
@@ -66,12 +68,13 @@
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                     <%--<td>${meal.userId}</td>--%>
-                <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
-                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+                <td><a href="meals?action=update&id=${meal.id}"><i class="material-icons">update</i></a></td>
+                <td><a href="meals?action=delete&id=${meal.id}"><i class="material-icons">delete</i></a></td>
             </tr>
         </c:forEach>
     </table>
 </section>
 </body>
+</ul>
 </html>
 
