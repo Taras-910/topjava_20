@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenTimeHalfOpen;
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
 import static ru.javawebinar.topjava.util.MealsUtil.filterByPredicate;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
@@ -56,7 +56,7 @@ public class MealRestController {
 
     public List<MealTo> getAll(LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate) {
         log.info("getAll(startDate, endDate,startTime, endTime) {} {} {} {}", startDate, endDate, startTime, endTime);
-        Predicate<Meal> filter = meal -> isBetweenTimeHalfOpen(meal.getTime(), startTime, endTime);
+        Predicate<Meal> filter = meal -> isBetween(meal.getTime(), startTime, endTime);
         return filterByPredicate(service.getAll(startDate, endDate, authUserId()), authUserCaloriesPerDay(), filter);
     }
 

@@ -8,15 +8,12 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
-import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenDate;
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
@@ -73,14 +70,14 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAll(int userId) {
         List<Meal> list = new ArrayList();
         for(Map<Integer,Meal> map : repository.values()) list.addAll(map.values());
-        return list;
+        return list.stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(toList());
     }
 
     @Override
     public List<Meal> getAll(LocalDate startDate, LocalDate endDate, int userId) {
         log.info("getAll(startDate, endDate,startTime, endTime) {} {} {}", startDate, endDate, userId);
         List<Meal> list = getAll(userId).stream()
-                .filter(meal -> isBetweenDate(meal.getDate(), startDate, endDate))
+                .filter(meal -> isBetween(meal.getDate(), startDate, endDate))
                 .collect(toList());
         if (userId == 0) return list;
         else return list.stream()
