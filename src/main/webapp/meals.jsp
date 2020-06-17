@@ -68,7 +68,7 @@
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                     <%--<td>${meal.userId}</td>--%>
-                <td><a href="meals?action=update&id=${meal.id}"><i class="material-icons">update</i></a></td>
+                <td><a href="meals?action=update&id=${meal.id}"><i class="material-icons">edit</i></a></td>
                 <td><a href="meals?action=delete&id=${meal.id}"><i class="material-icons">delete</i></a></td>
             </tr>
         </c:forEach>

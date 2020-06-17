@@ -2,15 +2,18 @@ package ru.javawebinar.topjava.util;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class DateTimeUtil <T>{
+public class DateTimeUtil {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public static <T extends Comparable>boolean isBetween(T obj, T startDate, T endDate) {
-        return obj.getClass().equals(LocalDate.class) ?
-                obj.compareTo(startDate) >= 0 && obj.compareTo(endDate) <= 0 :
-                obj.compareTo(startDate) >= 0 && obj.compareTo(endDate) < 0;
+    public static boolean isBetweenTimeHalfOpen(LocalTime lt, LocalTime startTime, LocalTime endTime) {
+        return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) < 0;
+    }
+
+    public static boolean isBetweenDate(LocalDate ld, LocalDate startDate, LocalDate endDate) {
+        return ld.compareTo(startDate) >= 0 && ld.compareTo(endDate) <= 0;
     }
 
     public static String toString(LocalDateTime ldt) {

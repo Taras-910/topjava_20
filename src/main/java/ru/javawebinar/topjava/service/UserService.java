@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.util.List;
@@ -17,18 +16,12 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    @Autowired
-    private MealRepository mealRepository;
-
-    public UserService() {}
-
     public User create(User user) {
         return repository.save(user);
     }
 
     public void delete(int id) {
         checkNotFoundWithId(repository.delete(id), id);
-
     }
 
     public User get(int id) {

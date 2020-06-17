@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
@@ -13,75 +14,67 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
-import static ru.javawebinar.topjava.util.DateTimeUtil.isBetween;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
-
     public static AtomicInteger COUNTER = new AtomicInteger(0);
     public static Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
+
     {
-        MealsUtil.MEALS.forEach(m -> save(m, m.getUserId()));
+        MealsUtil.MEALS.forEach(m -> save(m, m.getDate().getDayOfMonth() == 30 ? 1 : 2));
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
+        log.info("save");
         Map<Integer, Meal> userMap;
         if (meal.isNew()) {
+            log.info("create meal userId {} {}",meal,userId);
             meal.setId(COUNTER.incrementAndGet());
             userMap = repository.containsKey(userId) ? repository.get(userId) : new HashMap<>();
             userMap.put(meal.getId(), meal);
             repository.put(userId, userMap);
             return meal;
-            }
-        else {
-            userMap = checkNotFound(repository.getOrDefault(userId, null), "" + meal.getId());
-            userMap.computeIfPresent(meal.getId(), (id, oldMeal) -> {
-                if (oldMeal.getUserId() != userId) {
-                    checkNotFound(false, "user don't has entity " + meal);
-                }
-                return meal;
-            });
+        } else {
+            log.info("update meal userId {} {}",meal,userId);
+            return repository.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
         }
-         return meal;
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        Map<Integer, Meal> userMap = checkNotFound(repository.getOrDefault(userId, null),""+id);
-        checkNotFoundWithId(userMap.get(id).getUserId() == userId, id);
-        return userMap.remove(id) != null;
+        return repository.get(userId).remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        log.info("get {}", id);
-        Map<Integer, Meal> userMap = checkNotFound(repository.getOrDefault(userId, null),""+id);
-        Meal meal = userMap.getOrDefault(id, null);
-        checkNotFoundWithId(meal.getUserId() == userId, id);
-        return checkNotFoundWithId(meal, id);
+        log.info("get id {} userId {}", id, userId);
+        Meal falseMeal = new Meal (null, null, null,0);
+        Optional<Map<Integer,Meal>> mapOptional = Optional.ofNullable(repository.get(userId));
+        if (mapOptional.isPresent()) {
+            Optional<Meal> mealOptional = Optional.ofNullable(mapOptional.get().get(id));
+            if(mealOptional.isPresent()){
+                return mealOptional.get();
+            }
+        }
+        return falseMeal;
     }
 
     @Override
     public List<Meal> getAll(int userId) {
-        List<Meal> list = new ArrayList();
-        for(Map<Integer,Meal> map : repository.values()) list.addAll(map.values());
-        return list.stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(toList());
+        log.info("getAll userId {}",userId);
+        return repository.get(userId).values().stream()
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(toList());
     }
 
     @Override
-    public List<Meal> getAll(LocalDate startDate, LocalDate endDate, int userId) {
-        log.info("getAll(startDate, endDate,startTime, endTime) {} {} {}", startDate, endDate, userId);
-        List<Meal> list = getAll(userId).stream()
-                .filter(meal -> isBetween(meal.getDate(), startDate, endDate))
-                .collect(toList());
-        if (userId == 0) return list;
-        else return list.stream()
-                .filter(meal -> meal.getUserId() == userId)
+    public Collection<Meal> getAllFilteredByDate(LocalDate startDate, LocalDate endDate, int userId) {
+        log.info("getAllFilteredByDate(startDate, endDate,startTime, endTime) {} {} {}", startDate, endDate, userId);
+        return getAll(userId).stream()
+                .filter(meal -> DateTimeUtil.isBetweenDate(meal.getDate(), startDate, endDate))
                 .collect(toList());
     }
 }

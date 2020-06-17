@@ -17,8 +17,6 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class InMemoryUserRepository implements UserRepository {
 
-    public InMemoryUserRepository(){}
-
     public static AtomicInteger COUNTER = new AtomicInteger(0);
     public static Map<Integer, User> userMap = new ConcurrentHashMap<>();
 
@@ -37,7 +35,9 @@ public class InMemoryUserRepository implements UserRepository {
             user.setId(COUNTER.incrementAndGet());
             userMap.putIfAbsent(user.getId(), user);
             return user;
-        } else  return userMap.computeIfPresent(user.getId(), (key, value) -> user);
+        } else  {
+            return userMap.computeIfPresent(user.getId(), (key, value) -> user);
+        }
     }
 
     @Override
