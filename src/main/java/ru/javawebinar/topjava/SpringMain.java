@@ -19,8 +19,8 @@ public class SpringMain {
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
             InMemoryMealRepository repository = appCtx.getBean(InMemoryMealRepository.class);
 
-            int id = 3;
-            int userId = 3;
+            int id = 1;
+            int userId = 1;
             SecurityUtil.setAuthId(userId);
             Meal meal = new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 555);
             meal.setId(id);
