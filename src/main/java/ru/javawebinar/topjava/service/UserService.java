@@ -12,7 +12,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 @Service
 public class UserService {
 
-    private UserRepository repository;
+    private final UserRepository repository;
 
     public UserService(UserRepository repository) {
         this.repository = repository;

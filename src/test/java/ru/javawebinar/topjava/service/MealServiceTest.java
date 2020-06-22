@@ -2,9 +2,10 @@ package ru.javawebinar.topjava.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -20,7 +21,6 @@ import java.util.List;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -29,7 +29,7 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-
+    Logger log = LoggerFactory.getLogger(MealServiceTest.class);
     static {
         // Only for postgres driver logging
         // It uses java.util.logging and logged via jul-to-slf4j bridge
@@ -45,34 +45,33 @@ public class MealServiceTest {
     @Test
     public void create() {
         Meal newMeal = MealTestData.getNew();
-        Meal created = service.create(newMeal, authUserId());
+        Meal created = service.create(newMeal, USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
         assertMatch(created, newMeal);
-        assertMatch(service.get(newId, authUserId()), newMeal);
+        assertMatch(service.get(newId, USER_ID), newMeal);
     }
 
     @Test
     public void get() {
-        Meal meal = service.get(MEAL_ID, authUserId());
-        MEAL_1.setId(meal.getId());
-        assertMatch(meal, MEAL_1);
+        Meal meal = service.get(MEAL_ID3, USER_ID);
+        assertMatch(meal, MEAL_4);
     }
 
     @Test
     public void getNotFound() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, authUserId()));
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL_ID, authUserId());
-        assertNull(repository.get(MEAL_ID, authUserId()));
+        service.delete(MEAL_ID1, USER_ID);
+        assertNull(repository.get(MEAL_ID1, USER_ID));
     }
 
     @Test
     public void deletedNotFound() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, authUserId()));
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
     }
 
     @Test
@@ -80,25 +79,25 @@ public class MealServiceTest {
         List<Meal> between = MealTestData.getBetween();
         List<Meal> filtered = service.getBetweenInclusive(
                 LocalDate.of(2020,1,28),
-                LocalDate.of(2020,1,30), authUserId());
+                LocalDate.of(2020,1,30), USER_ID);
         assertMatch(filtered, between);
     }
 
     @Test
     public void getAll() {
-        List<Meal> all = service.getAll(authUserId());
+        List<Meal> all = service.getAll(USER_ID);
         assertMatch(all, MEALS);
     }
 
     @Test
     public void update() {
         Meal updated = getUpdated();
-        service.update(updated, authUserId());
-        assertMatch(service.get(MEAL_ID, authUserId()), updated);
+        service.update(updated, USER_ID);
+        assertMatch(service.get(MEAL_ID2, USER_ID), updated);
     }
 
     @Test
     public void updatedNotFound() throws Exception {
-        assertThrows(DataIntegrityViolationException.class, () -> service.update(MEAL_2, NOT_FOUND));
+        assertThrows(NotFoundException.class, () -> service.update(MEAL_3, ADMIN_ID));
     }
 }

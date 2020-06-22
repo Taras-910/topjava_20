@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
@@ -14,8 +16,8 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
-
-    private MealRepository repository;
+    Logger log = LoggerFactory.getLogger(MealService.class);
+    private final MealRepository repository;
 
     public MealService(MealRepository repository) {
         this.repository = repository;
@@ -34,6 +36,7 @@ public class MealService {
     }
 
     public List<Meal> getAll(int userId) {
+        log.info("getAll userId {}", userId);
         return repository.getAll(userId);
     }
 

@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
@@ -58,7 +59,10 @@ public class UserServiceTest {
 
     @Test
     public void delete() throws Exception {
+        InMemoryUserRepository inRepo = new InMemoryUserRepository();
+        System.out.println("before = "+ inRepo.get(USER_ID));
         service.delete(USER_ID);
+        System.out.println("after = "+ inRepo.get(USER_ID));
         assertNull(repository.get(USER_ID));
     }
 
