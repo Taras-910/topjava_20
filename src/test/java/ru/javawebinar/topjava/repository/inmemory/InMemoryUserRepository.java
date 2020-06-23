@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 import static ru.javawebinar.topjava.UserTestData.USER;
 
-
 @Repository
 public class InMemoryUserRepository extends InMemoryBaseRepository<User> implements UserRepository {
 
@@ -24,9 +23,13 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
 
     @Override
     public List<User> getAll() {
-        return getCollection().stream()
+        System.out.println("26 InMemoryUserRepository getCollection()="+getCollection());
+         List<User> list = getCollection().stream()
                 .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
+        System.out.println("29 InMemoryUserRepository getCollection()="+list);
+
+        return list;
     }
 
     @Override

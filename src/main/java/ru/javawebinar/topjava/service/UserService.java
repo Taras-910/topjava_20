@@ -35,6 +35,7 @@ public class UserService {
     }
 
     public List<User> getAll() {
+        System.out.println("38 UserService perository = "+repository.getClass().getSimpleName());
         return repository.getAll();
     }
 
