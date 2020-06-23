@@ -15,6 +15,8 @@ import static ru.javawebinar.topjava.UserTestData.USER;
 @Repository
 public class InMemoryUserRepository extends InMemoryBaseRepository<User> implements UserRepository {
 
+    public InMemoryUserRepository(){}
+
     public void init() {
         map.clear();
         map.put(UserTestData.USER_ID, USER);
@@ -23,13 +25,9 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
 
     @Override
     public List<User> getAll() {
-        System.out.println("26 InMemoryUserRepository getCollection()="+getCollection());
-         List<User> list = getCollection().stream()
+        return getCollection().stream()
                 .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
-        System.out.println("29 InMemoryUserRepository getCollection()="+list);
-
-        return list;
     }
 
     @Override

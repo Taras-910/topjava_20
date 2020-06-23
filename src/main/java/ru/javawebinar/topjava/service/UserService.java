@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -11,6 +12,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class UserService {
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final UserRepository repository;
 
@@ -35,7 +37,6 @@ public class UserService {
     }
 
     public List<User> getAll() {
-        System.out.println("38 UserService perository = "+repository.getClass().getSimpleName());
         return repository.getAll();
     }
 
