@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
@@ -11,17 +12,16 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
-@ContextConfiguration("classpath:spring/spring-app.xml")
+@ContextConfiguration("classpath:spring/spring-inmemory.xml")
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
+    @Autowired
     private InMemoryUserRepository repository;
 
-    private InMemoryAdminRestControllerSpringTest(){
-        repository = new InMemoryUserRepository();
-    }
+    @Autowired
+    private AdminRestController controller;
 
     @Before
     public void setUp() throws Exception {
@@ -30,13 +30,12 @@ public class InMemoryAdminRestControllerSpringTest {
 
     @Test
     public void delete() throws Exception {
-        repository.delete(USER_ID);
+        controller.delete(USER_ID);
         Assert.assertNull(repository.get(USER_ID));
     }
 
     @Test
     public void deleteNotFound() throws Exception {
-        Assert.assertThrows(NotFoundException.class,
-                () -> checkNotFoundWithId(repository.delete(NOT_FOUND), NOT_FOUND));
+        Assert.assertThrows(NotFoundException.class, () -> controller.delete(NOT_FOUND));
     }
 }
