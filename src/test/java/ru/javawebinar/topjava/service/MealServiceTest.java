@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,6 +13,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,8 +30,14 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
+    @Rule
+    public TestName name = new TestName();
+
     @Autowired
     private MealService service;
+
+    public MealServiceTest() {
+    }
 
     @Test
     public void delete() throws Exception {
@@ -99,5 +109,32 @@ public class MealServiceTest {
     @Test
     public void getBetweenWithNullDates() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
+    }
+
+    private static Map<String, Long> logMap;
+
+    @Before
+    public void before() {
+        logMap.put(name.getMethodName(), new Date().getTime());
+    }
+
+    @After
+    public void after() {
+        logMap.merge(name.getMethodName(), new Date().getTime(), (oldVal, newVal) -> newVal - oldVal);
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        logMap = new HashMap<>();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        System.out.println("\n================================\nmethodName                   " +
+                "mc\n-------------------------------");
+        for(Map.Entry<String, Long> s : logMap.entrySet()){
+            System.out.printf("%-24s : %4d\n", s.getKey(), s.getValue());
+        }
+        System.out.println("================================\n");
     }
 }
