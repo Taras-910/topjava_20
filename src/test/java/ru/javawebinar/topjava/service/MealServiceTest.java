@@ -1,8 +1,13 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.*;
-import org.junit.rules.TestName;
+import org.junit.AfterClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -13,9 +18,11 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -30,13 +37,31 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    @Rule
-    public TestName name = new TestName();
-
     @Autowired
     private MealService service;
+    private static final Logger logger = LoggerFactory.getLogger("");
+    private static final Map<Description, Long> logMap = new HashMap<>();
 
-    public MealServiceTest() {
+    private static String toLine(Description  description, String status, long nanos) {
+        return String.format("%s%s%d millis", description.getMethodName(), status, TimeUnit.NANOSECONDS.toMillis(nanos));
+    }
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            logMap.put(description, nanos);
+            logger.info(toLine(description, " finished: spent = ", nanos));
+        }
+    };
+
+    @AfterClass
+    public static void after() {
+        List<String> list = new ArrayList<>();
+        for(Map.Entry<Description, Long> entry : logMap.entrySet()){
+            list.add(toLine(entry.getKey(), " - ", entry.getValue()));
+        }
+        logger.info(list.toString());
     }
 
     @Test
@@ -109,32 +134,5 @@ public class MealServiceTest {
     @Test
     public void getBetweenWithNullDates() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
-    }
-
-    private static Map<String, Long> logMap;
-
-    @Before
-    public void before() {
-        logMap.put(name.getMethodName(), new Date().getTime());
-    }
-
-    @After
-    public void after() {
-        logMap.merge(name.getMethodName(), new Date().getTime(), (oldVal, newVal) -> newVal - oldVal);
-    }
-
-    @BeforeClass
-    public static void beforeClass() {
-        logMap = new HashMap<>();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        System.out.println("\n================================\nmethodName                   " +
-                "mc\n-------------------------------");
-        for(Map.Entry<String, Long> s : logMap.entrySet()){
-            System.out.printf("%-24s : %4d\n", s.getKey(), s.getValue());
-        }
-        System.out.println("================================\n");
     }
 }
