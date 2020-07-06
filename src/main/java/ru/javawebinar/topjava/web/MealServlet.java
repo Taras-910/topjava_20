@@ -1,8 +1,11 @@
 package ru.javawebinar.topjava.web;
 
-import org.springframework.context.ConfigurableApplicationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -22,20 +25,29 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 public class MealServlet extends HttpServlet {
-
-    private ConfigurableApplicationContext springContext;
+    private Logger log = LoggerFactory.getLogger(MealServlet.class);
     private MealRestController mealController;
+    private ClassPathXmlApplicationContext context;
+    public static ConfigurableEnvironment environment;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
-        mealController = springContext.getBean(MealRestController.class);
+        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile());
+        context = new ClassPathXmlApplicationContext(
+                new String[]{"spring/spring-app.xml", "spring/spring-db.xml"},false);
+        environment = context.getEnvironment();
+        environment.setActiveProfiles(Profiles.getProfiles());
+        log.info("--------------------------------------------------------------------");
+        for (final String profileName : environment.getActiveProfiles()) {
+            log.info("active profile - {}", profileName);
+        }
+        context.refresh();
+        mealController = context.getBean(MealRestController.class);
     }
 
     @Override
     public void destroy() {
-        springContext.close();
+        context.close();
         super.destroy();
     }
 

@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.repository.jpa;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
@@ -13,7 +16,9 @@ import java.util.List;
 
 @Repository
 @Transactional(readOnly = true)
+@Profile("jpa")
 public class JpaMealRepository implements MealRepository {
+    private static Logger log = LoggerFactory.getLogger("");
 
     @PersistenceContext
     private EntityManager em;
@@ -60,5 +65,10 @@ public class JpaMealRepository implements MealRepository {
                 .setParameter("startDateTime", startDateTime)
                 .setParameter("endDateTime", endDateTime)
                 .getResultList();
+    }
+
+    @Override
+    public Meal getWithUser(int id, int userId) {
+        return null;
     }
 }
