@@ -2,8 +2,6 @@ package ru.javawebinar.topjava.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -30,7 +28,6 @@ public class MealService {
         return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
-    @CacheEvict(value = "meals", allEntries = true)
     public void delete(int id, int userId) {
         checkNotFoundWithId(repository.delete(id, userId), id);
     }
@@ -39,18 +36,15 @@ public class MealService {
         return repository.getBetweenHalfOpen(atStartOfDayOrMin(startDate), atStartOfNextDayOrMax(endDate), userId);
     }
 
-    @Cacheable("meals")
     public List<Meal> getAll(int userId) {
         return repository.getAll(userId);
     }
 
-    @CacheEvict(value = "meals", allEntries = true)
     public void update(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
         checkNotFoundWithId(repository.save(meal, userId), meal.id());
     }
 
-    @CacheEvict(value = "meals", allEntries = true)
     public Meal create(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
         return repository.save(meal, userId);

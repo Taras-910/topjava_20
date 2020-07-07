@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
@@ -19,11 +17,9 @@ public class DataJpaUserRepository implements UserRepository {
     private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email");
 
     private final CrudUserRepository crudUserRepository;
-    private final CrudMealRepository crudMealRepository;
 
-    public DataJpaUserRepository(CrudUserRepository crudUserRepository, CrudMealRepository crudMealRepository) {
+    public DataJpaUserRepository(CrudUserRepository crudUserRepository) {
         this.crudUserRepository = crudUserRepository;
-        this.crudMealRepository = crudMealRepository;
     }
 
     @Override
@@ -51,13 +47,8 @@ public class DataJpaUserRepository implements UserRepository {
         return crudUserRepository.findAll(SORT_NAME_EMAIL);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public User getWithMeals(int id) {
-        User actual = crudUserRepository.findById(id).orElse(null);
-        List<Meal> meals = crudMealRepository.findByUserIdOrderByDateTimeDesc(actual.getId());
-        if(actual == null) return null;
-        actual.setMeals(meals);
-        return actual;
+        return crudUserRepository.getByIdWithMeals(id);
     }
 }

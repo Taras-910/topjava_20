@@ -171,48 +171,6 @@
     </dependencies>
 
     <profiles>
-
-<!--Impl Repository profiles-->
-        <profile>
-            <id>datajpa</id>
-            <properties>
-                <spring.profiles.active>datajpa</spring.profiles.active>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <file>
-                    <exists>${TOPJAVA_ROOT}/repository.datajpa"</exists>
-                </file>
-            </activation>
-        </profile>
-
-        <profile>
-            <id>jpa</id>
-            <properties>
-                <spring.profiles.active>jpa</spring.profiles.active>
-            </properties>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <file>
-                    <exists>${TOPJAVA_ROOT}/repository.jpa"</exists>
-                </file>
-            </activation>
-        </profile>
-
-        <profile>
-            <id>jdbc</id>
-            <properties>
-                <spring.profiles.active>jdbc</spring.profiles.active>
-            </properties>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <file>
-                    <exists>${TOPJAVA_ROOT}/repository.jdbc"</exists>
-                </file>
-            </activation>
-        </profile>
-
-<!--db profiles-->
         <profile>
             <id>hsqldb</id>
             <dependencies>
@@ -226,7 +184,6 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
-
         <profile>
             <id>postgres</id>
             <dependencies>

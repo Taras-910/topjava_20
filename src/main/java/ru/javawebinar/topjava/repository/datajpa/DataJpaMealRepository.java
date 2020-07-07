@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
@@ -24,6 +23,7 @@ public class DataJpaMealRepository implements MealRepository {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
     public Meal save(Meal meal, int userId) {
         meal.setUser(userRepository.getOne(userId));
@@ -43,24 +43,16 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return mealRepository.findByUserIdOrderByDateTimeDesc(userId);
+       return mealRepository.getAll(userId);
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startTime, LocalDateTime endTime, int userId) {
-//  1-variant
-        return mealRepository.findByUserIdAndDateTimeGreaterThanEqualAndDateTimeLessThanOrderByDateTimeDesc(userId, startTime, endTime);
-//  2-variant
-        /*return repo.getBetweenHalfOpen(userId, startTime, endTime);*/
+        return mealRepository.getBetweenHalfOpen(userId, startTime, endTime);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Meal getWithUser(int id, int userId) {
-        Meal actual = get(id, userId);
-        User user = userRepository.findById(userId).orElse(null);
-        if (actual == null || user == null) return null;
-        actual.setUser(user);
-        return actual;
+        return mealRepository.getByIdWithUser(id, userId);
     }
 }

@@ -1,85 +1,36 @@
 package ru.javawebinar.topjava;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
-import ru.javawebinar.topjava.service.UserService;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.web.meal.MealRestController;
+import ru.javawebinar.topjava.web.user.AdminRestController;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.Arrays;
+import java.util.List;
 
 public class SpringMain {
     public static void main(String[] args) {
-        Logger log = LoggerFactory.getLogger("");
         // java 7 automatic resource management
-//        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/inmemory.xml")) {
-//            System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
+        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/inmemory.xml")) {
+            System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
+            AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
+            adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ADMIN));
+            System.out.println();
 
- /*           ConfigurableApplicationContext springContext =
-                    new ClassPathXmlApplicationContext(["spring/spring-db.xml"],  false);
-
-            springContext.getEnvironment().setActiveProfiles(...);
-            springContext.refresh(); (edited)
-*/
-
-//        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile());
-//        context = new ClassPathXmlApplicationContext(
-//                new String[]{"spring/spring-app.xml", "spring/spring-db.xml"},false);
-//        environment = context.getEnvironment();
-//        environment.setActiveProfiles(Profiles.getProfiles());
-//        log.info("--------------------------------------------------------------------");
-//        for (final String profileName : environment.getActiveProfiles()) {
-//            log.info("active profile - {}", profileName);
-//        }
-//        context.refresh();
-
-        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile());
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-                new String[]{"spring/spring-app.xml","spring/spring-db.xml"}, false);
-        ConfigurableEnvironment env = ctx.getEnvironment();
-        env.setActiveProfiles(Profiles.getProfiles());
-        ctx.refresh();
-        log.info("--------------------------------------------------------------------");
-        for (final String profileName : env.getActiveProfiles()) {
-            log.info("active profile - {}", profileName);
+            MealRestController mealController = appCtx.getBean(MealRestController.class);
+            List<MealTo> filteredMealsWithExcess =
+                    mealController.getBetween(
+                            LocalDate.of(2020, Month.JANUARY, 30), LocalTime.of(7, 0),
+                            LocalDate.of(2020, Month.JANUARY, 31), LocalTime.of(11, 0));
+            filteredMealsWithExcess.forEach(System.out::println);
+            System.out.println();
+            System.out.println(mealController.getBetween(null, null, null, null));
         }
-
-        System.out.println("Bean definition names: " + Arrays.toString(ctx.getBeanDefinitionNames()));
-
-
-        UserService service = ctx.getBean(UserService.class);
-//        DataJpaMealRepository dataJpaMealRepository = ctx.getBean("dataJpaMealRepository", DataJpaMealRepository.class);
-//        DataJpaUserRepository dataJpaUserRepository = ctx.getBean("dataJpaUserRepository", DataJpaUserRepository.class);
-//
-//
-//        User user = dataJpaUserRepository.getWithMeals(USER_ID);
-//        System.out.println("====================================\n");
-//        System.out.println("user = "+user);
-//        System.out.println("userMeals = "+user.getMeals());
-
-
-
-        ctx.close();
-//        for (final String profileName : env.getActiveProfiles()) {
-//            System.out.println("====================================\n");
-//            System.out.println("Currently active profile - "+ profileName);
-//        }
-
-
-/*
-        String[] profiles = Profiles.getProfiles();
-        log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        for(String p : profiles) {
-            log.info("profiles - {}", p);
-        }
-*/
-
-/*
-        for(Meal m : MealTestData.MEALS) {
-            log.info("meal - {}", m);
-        }
-*/
-
-
     }
 }

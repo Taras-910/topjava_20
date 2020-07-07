@@ -3,8 +3,6 @@ package ru.javawebinar.topjava;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-
 public class Profiles {
     private static Logger log = LoggerFactory.getLogger("");
     public static final String
@@ -13,25 +11,11 @@ public class Profiles {
             DATAJPA = "datajpa";
 
     public static final String REPOSITORY_IMPLEMENTATION = DATAJPA;
+//    public static final String REPOSITORY_IMPLEMENTATION = JDBC;
 
     public static final String
             POSTGRES_DB = "postgres",
             HSQL_DB = "hsqldb";
-
-    //  Get DB profile depending of Implementation in classpath
-    public static String getActiveImplProfile() {
-        if (new File("/Users/taras/Downloads/topjava/src/main/java/ru/javawebinar/topjava/repository/datajpa").exists()) {
-            return DATAJPA;
-        }
-        if (new File("/Users/taras/Downloads/topjava/src/main/java/ru/javawebinar/topjava/repository/jpa").exists()) {
-            return JPA;
-        }
-        if (new File("/Users/taras/Downloads/topjava/src/main/java/ru/javawebinar/topjava/repository/jdbc").exists()) {
-            return JDBC;
-        }
-        //return "Could not find Repository directory";
-        return JDBC;
-    }
 
     //  Get DB profile depending of DB driver in classpath
     public static String getActiveDbProfile() {
@@ -49,6 +33,6 @@ public class Profiles {
     }
 
     public static String[] getProfiles() {
-          return new String[]{getActiveImplProfile(),getActiveDbProfile()};
+          return new String[]{REPOSITORY_IMPLEMENTATION,getActiveDbProfile()};
     }
 }
