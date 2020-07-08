@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
-import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -21,6 +20,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import static ru.javawebinar.topjava.Profiles.REPOSITORY_IMPLEMENTATION;
+import static ru.javawebinar.topjava.Profiles.getActiveDbProfile;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
@@ -32,11 +33,11 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile());
+        System.setProperty("spring.profiles.active", getActiveDbProfile());
         context = new ClassPathXmlApplicationContext(
                 new String[]{"spring/spring-app.xml", "spring/spring-db.xml"},false);
         environment = context.getEnvironment();
-        environment.setActiveProfiles(Profiles.getProfiles());
+        environment.setActiveProfiles(getActiveDbProfile(), REPOSITORY_IMPLEMENTATION);
         log.info("--------------------------------------------------------------------");
         for (final String profileName : environment.getActiveProfiles()) {
             log.info("active profile - {}", profileName);

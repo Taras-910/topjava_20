@@ -31,8 +31,4 @@ public class Profiles {
             }
         }
     }
-
-    public static String[] getProfiles() {
-          return new String[]{REPOSITORY_IMPLEMENTATION,getActiveDbProfile()};
-    }
 }

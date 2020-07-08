@@ -2,13 +2,10 @@ package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -32,43 +29,25 @@ public abstract class AbstractServiceTest {
     private static final Logger log = getLogger("result");
     private static final StringBuilder results = new StringBuilder();
 
-    @Autowired
-    private CacheManager cacheManager;
-
     @Rule
     // http://stackoverflow.com/questions/14892125/what-is-the-best-practice-to-determine-the-execution-time-of-the-bussiness-relev
     public final Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String result = String.format("\n%-57s %-25s %7d",description.getClassName(), description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            String result = String.format("\n%-61s %-25s %7d",description.getClassName(), description.getMethodName(),
+                    TimeUnit.NANOSECONDS.toMillis(nanos));
             results.append(result);
             log.info(result + " ms\n");
         }
     };
 
-    @AfterClass
+    @AfterClass()
     public static void printResult() {
-        log.info("\n---------------------------------------------------------------------------------------------" +
-                "\n                                Profile                   Test                 Duration, ms" +
-                "\n---------------------------------------------------------------------------------------------" +
+        log.info("\n------------------------------------------------------------------------------------------------" +
+                "\n                                       Class                  Test                 Duration, ms" +
+                "\n------------------------------------------------------------------------------------------------" +
                 results +
-                "\n---------------------------------------------------------------------------------------------");
+                "\n------------------------------------------------------------------------------------------------");
+        results.delete(0, results.length());
     }
-    @Test
-    public abstract void delete() throws Exception;
-
-    @Test
-    public abstract void create() throws Exception;
-
-    @Test
-    public abstract void get() throws Exception;
-
-    @Test
-    public abstract void getNotFound() throws Exception;
-
-    @Test
-    public abstract void update() throws Exception;
-
-    @Test
-    public abstract void getAll() throws Exception;
 }
