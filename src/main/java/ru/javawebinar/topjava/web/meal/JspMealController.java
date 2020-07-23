@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +19,12 @@ import static java.util.Objects.requireNonNull;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
+@RequestMapping(value ="/meals")
 @Controller
 public class JspMealController extends AbstractMealController {
     private static final Logger log = LoggerFactory.getLogger(JspMealController.class);
 
-    @PostMapping("/meals/**")
+    @PostMapping("/**")
     public String save(HttpServletRequest request) {
         log.info("Post save");
         Meal meal = new Meal(
@@ -39,7 +41,7 @@ public class JspMealController extends AbstractMealController {
         return "redirect:/meals";
     }
 
-    @GetMapping("/meals/create")
+    @GetMapping("/create")
     public String create(Model model) {
         log.info("createMeal");
         Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
@@ -47,7 +49,7 @@ public class JspMealController extends AbstractMealController {
         return "mealForm";
     }
 
-    @GetMapping("/meals/update/{mealId}")
+    @GetMapping("/update/{mealId}")
     public String update(@PathVariable(value = "mealId") Integer mealId, Model model) {
         log.info("update");
         Meal meal =  super.get(mealId);
@@ -55,20 +57,20 @@ public class JspMealController extends AbstractMealController {
         return "mealForm";
     }
 
-    @GetMapping("/meals")
+    @GetMapping("")
     public String get(Model model) {
         model.addAttribute("meals", super.getAll());
         return "meals";
     }
 
-    @GetMapping("/meals/delete/{mealId}")
+    @GetMapping("/delete/{mealId}")
     public String delete(@PathVariable("mealId") Integer mealId) {
         log.info("delete for mealId {}", mealId);
         super.delete(mealId);
         return "redirect:/meals";
     }
 
-    @GetMapping("/meals/filter")
+    @GetMapping("/filter")
     public String filter(HttpServletRequest request, Model model) {
         log.info("filter");
         model.addAttribute("meals", super.getBetween(
@@ -77,7 +79,7 @@ public class JspMealController extends AbstractMealController {
         return "meals";
     }
 
- @GetMapping("/meals/*")
+ @GetMapping("/*")
     public String getDefault(Model model) {
         log.info("getMealsDefault");
         model.addAttribute("meals", super.getAll());

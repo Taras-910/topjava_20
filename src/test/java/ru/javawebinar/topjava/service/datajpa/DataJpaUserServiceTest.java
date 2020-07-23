@@ -12,12 +12,14 @@ import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import static ru.javawebinar.topjava.MealTestData.MEALS_ADMIN;
 import static ru.javawebinar.topjava.Profiles.DATAJPA;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles(DATAJPA)
 public class DataJpaUserServiceTest extends AbstractUserServiceTest {
-    @Autowired
+
+    @Autowired(required = false)
     protected JpaUtil jpaUtil;
 
     @Autowired
@@ -31,9 +33,9 @@ public class DataJpaUserServiceTest extends AbstractUserServiceTest {
 
     @Test
     public void getWithMeals() throws Exception {
-        User user = service.getWithMeals(USER_ID);
-        USER_MATCHER.assertMatch(user, USER);
-        MealTestData.MEAL_MATCHER.assertMatch(user.getMeals(), MealTestData.MEALS);
+        User admin = service.getWithMeals(ADMIN_ID);
+        USER_MATCHER.assertMatch(admin, ADMIN);
+        MealTestData.MEAL_MATCHER.assertMatch(admin.getMeals(), MEALS_ADMIN);
     }
 
     @Test

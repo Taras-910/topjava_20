@@ -35,4 +35,12 @@ public class UserTestData {
         updated.setRoles(EnumSet.of(Role.USER, Role.ADMIN));
         return updated;
     }
+
+    public static User getUpdatedNotRoles() {
+        User updated = new User(USER);
+        updated.setName("UpdatedName");
+        updated.setCaloriesPerDay(330);
+        updated.setRoles(EnumSet.noneOf(Role.class));
+        return updated;
+    }
 }

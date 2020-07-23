@@ -1,17 +1,11 @@
 package ru.javawebinar.topjava;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
-import ru.javawebinar.topjava.model.Role;
-import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.web.meal.MealRestController;
-import ru.javawebinar.topjava.web.user.AdminRestController;
+import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.service.UserService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import static ru.javawebinar.topjava.MealTestData.MEAL1_ID;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 public class SpringMain {
     public static void main(String[] args) {
@@ -21,6 +15,7 @@ public class SpringMain {
             appCtx.load("spring/spring-app.xml", "spring/spring-db.xml", "spring/spring-db.xml");
             appCtx.refresh();
 
+/*
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ADMIN));
@@ -34,6 +29,12 @@ public class SpringMain {
             filteredMealsWithExcess.forEach(System.out::println);
             System.out.println();
             System.out.println(mealController.getBetween(null, null, null, null));
+*/
+ //           AdminRestController adminRestController = appCtx.getBean(AdminRestController.class);
+            UserService userService = appCtx.getBean(UserService.class);
+            System.out.println(userService.get(USER_ID));
+            MealService mealService = appCtx.getBean(MealService.class);
+            System.out.println(mealService.get(MEAL1_ID, USER_ID));
         }
     }
 }

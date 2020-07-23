@@ -5,7 +5,7 @@
 <html>
 <head>
     <title>Meal</title>
-    <style><%@include file="css/style.css"%></style>
+    <link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
 </head>
 <jsp:include page="fragments/headTag.jsp"/>
 <body>

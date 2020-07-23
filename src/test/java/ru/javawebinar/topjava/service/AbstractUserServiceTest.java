@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
-    Logger log = LoggerFactory.getLogger(AbstractUserServiceTest.class);
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     protected UserService service;
 
@@ -28,8 +29,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         int newId = created.id();
         User newUser = getNew();
         newUser.setId(newId);
-        log.info("service.get(newId) {}",service.get(newId));
-        log.info("newUser {}",newUser);
         USER_MATCHER.assertMatch(created, newUser);
         USER_MATCHER.assertMatch(service.get(newId), newUser);
     }
@@ -70,9 +69,9 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void update() throws Exception {
-        User updated = getUpdated();
+        User updated = getUpdatedNotRoles();
         service.update(updated);
-        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
+        USER_MATCHER.assertMatch(service.get(USER_ID), updated);
     }
 
     @Test
@@ -83,6 +82,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithException() throws Exception {
+        Assume.assumeTrue(this.getClass().getSimpleName().toLowerCase().contains("jpa"));
         validateRootCause(() -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "  ", "password", Role.USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)), ConstraintViolationException.class);

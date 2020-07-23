@@ -68,10 +68,10 @@
         </bean>
 
         <!--  Transaction Manager -->
-        <bean id="txManager" class= "org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <bean id="transactionManager" class= "org.springframework.jdbc.datasource.DataSourceTransactionManager">
             <property name="dataSource" ref="dataSource"/>
         </bean>
-        <tx:annotation-driven proxy-target-class="true" transaction-manager="txManager" />
+        <tx:annotation-driven transaction-manager="transactionManager" />
     </beans>
 
     <beans profile="jpa,datajpa">
