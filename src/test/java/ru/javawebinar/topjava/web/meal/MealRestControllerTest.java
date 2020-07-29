@@ -12,9 +12,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -79,29 +76,28 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_MATCHER.contentJson(MEAL1));
     }
-
+/*
+    //п.2.2
     @Test
     void getBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" +
-                "startDate="+ LocalDate.of(2020,01,30) +
-                "&startTime="+ LocalTime.of(8,00)+
-                "&endDate="+ LocalDate.of(2020,01,30) +
-                "&endTime="+ LocalTime.of(22,00)))
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+                .param("startDateTime", "2020-01-30T08:00")
+                .param("endDateTime", "2020-01-30T22:00"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO_FILTERED));
     }
-
-//    @Test
-//    void getBetween() throws Exception {
-//        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" +
-//                "startDate="+ "" +
-//                "&startTime="+ "" +
-//                "&endDate="+ "" +
-//                "&endTime="+ ""))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-//                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO));
-//    }
-
+*/
+    //п.3
+    @Test
+    void getBetween() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+                .param("startDate", "")
+                .param("startTime", "08:00")
+                .param("endDate", "2020-01-30")
+                .param("endTime", "22:00"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO_FILTERED));
+    }
 }

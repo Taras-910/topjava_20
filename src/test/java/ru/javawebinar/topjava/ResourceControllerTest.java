@@ -1,4 +1,4 @@
-package resources.css;
+package ru.javawebinar.topjava;
 
 import org.junit.jupiter.api.Test;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
