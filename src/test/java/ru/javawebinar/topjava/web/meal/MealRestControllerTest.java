@@ -76,19 +76,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_MATCHER.contentJson(MEAL1));
     }
-/*
-    //п.2.2
-    @Test
-    void getBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
-                .param("startDateTime", "2020-01-30T08:00")
-                .param("endDateTime", "2020-01-30T22:00"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO_FILTERED));
-    }
-*/
-    //п.3
+
     @Test
     void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
@@ -98,6 +86,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .param("endTime", "22:00"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO_FILTERED));
+                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO));
     }
 }
