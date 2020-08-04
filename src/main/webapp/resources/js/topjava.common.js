@@ -23,13 +23,16 @@ function add() {
 }
 
 function deleteRow(id) {
-    $.ajax({
-        url: context.ajaxUrl + id,
-        type: "DELETE"
-    }).done(function () {
-        updateTable();
-        successNoty("Deleted");
-    });
+    if (confirm('Are you sure?')) {
+//        debugger;
+        $.ajax({
+            url: context.ajaxUrl + id,
+            type: "DELETE"
+        }).done(function () {
+            updateTable();
+            successNoty("Deleted");
+        });
+    }
 }
 
 function updateTable() {
@@ -39,6 +42,7 @@ function updateTable() {
 }
 
 function save() {
+    debugger;
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,

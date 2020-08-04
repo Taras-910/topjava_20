@@ -6,8 +6,8 @@
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <body>
-<script type="text/javascript" src="resources/js/topjava.common.js" defer></script>
-<script type="text/javascript" src="resources/js/topjava.users.js" defer></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/topjava.common.js" defer></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/topjava.users.js" defer></script>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <div class="jumbotron pt-4">
@@ -38,7 +38,7 @@
                     <td><input type="checkbox" <c:if test="${user.enabled}">checked</c:if> id="${user.id}"/></td>
                     <td><fmt:formatDate value="${user.registered}" pattern="dd-MMMM-yyyy"/></td>
                     <td><a><span class="fa fa-pencil"></span></a></td>
-                    <td><a class="delete" id="${user.id}"><span class="fa fa-remove"></span></a></td>
+                    <td><a onclick="deleteRow('${user.id}')"><span class="fa fa-remove"></span></a></td>
                 </tr>
             </c:forEach>
         </table>
@@ -54,6 +54,7 @@
             </div>
             <div class="modal-body">
                 <form id="detailsForm">
+
                     <input type="hidden" id="id" name="id">
 
                     <div class="form-group">
@@ -88,6 +89,7 @@
         </div>
     </div>
 </div>
+
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
