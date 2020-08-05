@@ -22,7 +22,7 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User get(@PathVariable int id) {
         return super.get(id);
     }
@@ -50,8 +50,14 @@ public class AdminRestController extends AbstractUserController {
         super.update(user, id);
     }
 
-    @GetMapping("/by")
+    @GetMapping(value = "/by", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getByMail(@RequestParam String email) {
         return super.getByMail(email);
+    }
+
+    @Override
+    @GetMapping(value = "/withMeals/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getWithMeals(@PathVariable int id) {
+        return super.getWithMeals(id);
     }
 }

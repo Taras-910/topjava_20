@@ -1,11 +1,14 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -44,5 +47,18 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
+    }
+
+    @Test
+    void getWithMeals() throws Exception {
+        User admin = userService.getWithMeals(ADMIN_ID);
+        USER_MATCHER.assertMatch(admin, ADMIN);
+        MealTestData.MEAL_MATCHER.assertMatch(admin.getMeals(), MealTestData.ADMIN_MEAL2, MealTestData.ADMIN_MEAL1);
+    }
+
+    @Test
+    void getWithMealsNotFound() throws Exception {
+        Assertions.assertThrows(NotFoundException.class,
+                () -> userService.getWithMeals(1));
     }
 }
