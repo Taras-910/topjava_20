@@ -1,17 +1,22 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/meals")
 public class MealUIController extends AbstractMealController{
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,4 +42,14 @@ public class MealUIController extends AbstractMealController{
             super.create(meal);
         }
     }
+
+    @Override
+    @GetMapping(value="/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MealTo> getBetween(@RequestParam LocalDate startDate,
+                                   @RequestParam LocalTime startTime,
+                                   @RequestParam LocalDate endDate,
+                                   @RequestParam LocalTime endTime) {
+        return super.getBetween(startDate, startTime, endDate, endTime);
+    }
+
 }

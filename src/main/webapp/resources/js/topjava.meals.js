@@ -1,3 +1,15 @@
+function filteredTable() {
+//    debugger;
+    $.ajax({
+        type: "GET",
+        url: context.ajaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(function(data) {
+        context.datatableApi.clear().rows.add(data).draw();
+        successNoty("Filtered");
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable({
@@ -8,15 +20,12 @@ $(function () {
             "columns": [
                 {
                     "data": "dateTime",
-                    "defaultContent": ""
                 },
                 {
                     "data": "description",
-                    "defaultContent": ""
                 },
                 {
                     "data": "calories",
-                    "defaultContent": ""
                 },
                 {
                     "defaultContent": "Edit",
@@ -33,6 +42,6 @@ $(function () {
                     "desc"
                 ]
             ]
-        }),
+        })
     });
 });

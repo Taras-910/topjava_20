@@ -3,12 +3,6 @@ var context, form;
 function makeEditable(ctx) {
     context = ctx;
     form = $('#detailsForm');
-    $(".delete").click(function () {
-        if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
-        }
-    });
-
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
@@ -38,11 +32,10 @@ function deleteRow(id) {
 function updateTable() {
     $.get(context.ajaxUrl, function (data) {
         context.datatableApi.clear().rows.add(data).draw();
-    });
+    }, "json");
 }
 
 function save() {
-    debugger;
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,

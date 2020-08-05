@@ -1,3 +1,14 @@
+function setEnable(id, enabled) {
+//    debugger;
+    $.post({
+        url: context.ajaxUrl + id,
+        data: "enabled=" + enabled
+    }).done(function() {
+        updateTable();
+        successNoty("Set Enabled");
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable({
