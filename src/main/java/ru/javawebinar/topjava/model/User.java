@@ -40,7 +40,7 @@ public class User extends AbstractNamedEntity {
     @Size(min = 5, max = 100)
     private String password;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", columnDefinition = "bool default true")
     private boolean enabled;
 
     @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()")

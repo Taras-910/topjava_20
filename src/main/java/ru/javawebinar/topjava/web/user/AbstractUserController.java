@@ -51,9 +51,7 @@ public abstract class AbstractUserController {
 
     public void setEnable(Integer id, Boolean enable){
         log.info("setEnable enable {} for user id={}", enable, id);
-        User user = service.get(id);
-        user.setEnabled(enable);
-        service.update(user);
+        service.setEnable(id, enable);
     }
 
     public User getWithMeals(int id){

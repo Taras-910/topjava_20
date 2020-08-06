@@ -1,7 +1,5 @@
 function filteredTable() {
-//    debugger;
-    $.ajax({
-        type: "GET",
+    $.get({
         url: context.ajaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(function(data) {
@@ -10,7 +8,12 @@ function filteredTable() {
     });
 }
 
-// $(document).ready(function () {
+function updateFilteredTable() {
+    $.get(filteredMealsUrl, function (data) {
+        context.datatableApi.clear().rows.add(data).draw();
+    }, "JSON");
+}
+
 $(function () {
     makeEditable({
         ajaxUrl: "meals/",

@@ -1,15 +1,17 @@
-function setEnable(id, enabled) {
-//    debugger;
+function setEnable(id, element) {
+    var enabled = element.is(":checked");
     $.post({
         url: context.ajaxUrl + id,
         data: "enabled=" + enabled
     }).done(function() {
-        updateTable();
-        successNoty("Set Enabled");
+        element.closest("tr").attr('data-userEnabled', enabled);
+        enabled ? successNoty("Set Enabled") : successNoty("Set Disabled");
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        $("#id").prop("checked", !enabled);
+        failNoty(jqXHR);
     });
 }
 
-// $(document).ready(function () {
 $(function () {
     makeEditable({
         ajaxUrl: "admin/users/",

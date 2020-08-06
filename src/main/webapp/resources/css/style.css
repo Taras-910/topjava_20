@@ -48,11 +48,11 @@ body {
     color: #760707;
 }
 
-tr[data-userActive="true"] {
+tr[data-userEnabled="true"] {
     color: #129c28;
 }
 
-tr[data-userActive="false"] {
+tr[data-userEnabled="false"] {
     color: rgb(181, 206, 188);
 }
 
