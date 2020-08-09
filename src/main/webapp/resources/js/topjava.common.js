@@ -12,12 +12,14 @@ function makeEditable(ctx) {
 }
 
 function add() {
+//    debugger;
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
     $("#editRow").modal();
 }
 
 function updateRow(id) {
+//    debugger
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
@@ -44,6 +46,7 @@ function updateTableByData(data) {
 }
 
 function save() {
+ //   debugger
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
