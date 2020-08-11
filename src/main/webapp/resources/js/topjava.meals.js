@@ -12,7 +12,58 @@ function clearFilter() {
     $.get(mealAjaxUrl, updateTableByData);
 }
 
-//data.excess = undefined;
+$('#dateTime').datetimepicker({
+    format: 'Y-m-d\\TH:i'
+});
+
+jQuery(function(){
+    jQuery('#startDate').datetimepicker({
+        format:'Y-m-d',
+        onShow:function( ct ){
+            this.setOptions({
+                startDate:jQuery('#endDate').val()?jQuery('#endDate').val():false
+            })
+        },
+        timepicker:false
+    });
+});
+
+jQuery(function(){
+    jQuery('#endDate').datetimepicker({
+        format:'Y-m-d',
+        onShow:function( ct ){
+            this.setOptions({
+                minDate:jQuery('#startDate').val()?jQuery('#startDate').val():false
+            })
+        },
+        timepicker:false
+    });
+});
+
+jQuery(function(){
+    jQuery('#startTime').datetimepicker({
+        format:'H:i',
+        onShow:function( ct ){
+            this.setOptions({
+                startDate:jQuery('#endTime').val()?jQuery('#endTime').val():false
+            })
+        },
+        datepicker:false
+    });
+});
+
+jQuery(function(){
+    jQuery('#endTime').datetimepicker({
+        format:'H:i',
+        onShow:function( ct ){
+            this.setOptions({
+                minDate:jQuery('#startTime').val()?jQuery('#startTime').val():false
+            })
+        },
+        datepicker:false
+    });
+});
+
 $(function () {
 //    debugger;
     makeEditable({
