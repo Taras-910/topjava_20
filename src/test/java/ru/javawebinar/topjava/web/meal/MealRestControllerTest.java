@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -109,6 +108,6 @@ class MealRestControllerTest extends AbstractControllerTest {
     void unAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + MEAL1_ID))
                 .andDo(print())
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is(401));
     }
 }

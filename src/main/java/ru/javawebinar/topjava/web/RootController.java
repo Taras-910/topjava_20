@@ -13,11 +13,6 @@ public class RootController {
     @Autowired
     private MealService mealService;
 
-    @GetMapping("/")
-    public String root() {
-        return "redirect:meals";
-    }
-
     @GetMapping("/users")
     public String getUsers() {
         return "users";

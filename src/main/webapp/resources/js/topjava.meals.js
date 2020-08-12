@@ -16,19 +16,20 @@ $('#dateTime').datetimepicker({
     format: 'Y-m-d\\TH:i'
 });
 
+$('.modal-body#dateTime').each(function (isoDate) {
+    return isoDate.replace('T', ' ').substr(0, 16);
+});
+
 jQuery(function(){
     jQuery('#startDate').datetimepicker({
         format:'Y-m-d',
         onShow:function( ct ){
             this.setOptions({
-                startDate:jQuery('#endDate').val()?jQuery('#endDate').val():false
+                maxDate:jQuery('#endDate').val()?jQuery('#endDate').val():false
             })
         },
         timepicker:false
     });
-});
-
-jQuery(function(){
     jQuery('#endDate').datetimepicker({
         format:'Y-m-d',
         onShow:function( ct ){
@@ -45,14 +46,11 @@ jQuery(function(){
         format:'H:i',
         onShow:function( ct ){
             this.setOptions({
-                startDate:jQuery('#endTime').val()?jQuery('#endTime').val():false
+                maxDate:jQuery('#endTime').val()?jQuery('#endTime').val():false
             })
         },
         datepicker:false
     });
-});
-
-jQuery(function(){
     jQuery('#endTime').datetimepicker({
         format:'H:i',
         onShow:function( ct ){
@@ -65,7 +63,6 @@ jQuery(function(){
 });
 
 $(function () {
-//    debugger;
     makeEditable({
         ajaxUrl: mealAjaxUrl,
         datatableApi: $("#datatable").DataTable({
@@ -107,14 +104,15 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
-           ,
+            ],
+            "aoColumnDefs" : [
+                {
+                    'bSortable': false,
+                    'aTargets': [ 3,4 ],
+                }]
+            ,
             "createdRow": function (row, data, dataIndex) {
-                if (!data.excess) {
-                    $(row).attr("data-mealExcess", false);
-                } else {
-                    $(row).attr("data-mealExcess", true);
-                }
+                $(row).attr("data-mealExcess", data.excess);
             }
         }),
         updateTable: updateFilteredTable

@@ -23,8 +23,6 @@ public class DateTimeFormatters {
         public String print(LocalDateTime ldt, Locale locale) { return ldt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); }
     }
 
-
-
     public static class LocalDateFormatter implements Formatter<LocalDate> {
 
         @Override

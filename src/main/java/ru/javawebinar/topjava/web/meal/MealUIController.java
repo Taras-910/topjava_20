@@ -13,7 +13,8 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.errorBinding;
 
 @RestController
 @RequestMapping("/profile/meals")
@@ -40,12 +41,7 @@ public class MealUIController extends AbstractMealController {
 
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
-        if (result.hasErrors()) {
-            String errorFieldsMsg = result.getFieldErrors().stream()
-                    .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                    .collect(Collectors.joining("<br>"));
-            return ResponseEntity.unprocessableEntity().body(errorFieldsMsg);
-        }
+        errorBinding(result);
         if (meal.isNew()) {
             super.create(meal);
         } else {
