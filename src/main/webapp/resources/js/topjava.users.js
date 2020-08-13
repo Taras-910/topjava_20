@@ -61,12 +61,12 @@ $(function () {
                         }
                     },
                     {
-                        "ordering": false,
+                        "orderable": false,
                         "defaultContent": "",
                         "render": renderEditBtn
                     },
                     {
-                        "ordering": false,
+                        "orderable": false,
                         "defaultContent": "",
                         "render": renderDeleteBtn
                     }

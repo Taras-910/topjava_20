@@ -12,12 +12,14 @@ function makeEditable(ctx) {
 }
 
 function add() {
+//    debugger;
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
     $("#editRow").modal();
 }
 
 function updateRow(id) {
+//    debugger
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
@@ -44,6 +46,7 @@ function updateTableByData(data) {
 }
 
 function save() {
+    //   debugger
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
@@ -76,25 +79,8 @@ function successNoty(key) {
 
 function failNoty(jqXHR) {
     closeNoty();
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = 'Not connect.\n Verify Network.';
-    } else if (jqXHR.status == 404) {
-        msg = 'Requested page not found. [404]';
-    } else if (jqXHR.status == 500) {
-        msg = 'Data entry Error or Internal Server Error [500].';
-    } else if (exception === 'parsererror') {
-        msg = 'Requested JSON parse failed.';
-    } else if (exception === 'timeout') {
-        msg = 'Time out error.';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] +
-            ": " + jqXHR.status + (jqXHR.responseJSON ? "<br>" + jqXHR.responseJSON.description : "")+" <br>"+msg,
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status + (jqXHR.responseJSON ? "<br>" + jqXHR.responseJSON : ""),
         type: "error",
         layout: "bottomRight"
     }).show();
