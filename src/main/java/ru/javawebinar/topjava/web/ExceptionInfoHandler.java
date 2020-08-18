@@ -16,14 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.ErrorInfo;
-import ru.javawebinar.topjava.util.exception.ErrorType;
-import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.getDetail;
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
 @RestControllerAdvice(annotations = RestController.class)
@@ -45,7 +42,8 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class, DoubleEmailException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, null);
     }
@@ -68,18 +66,13 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(BindException.class)
-    public ErrorInfo bindError(HttpServletRequest req, Exception e) {
-        BindingResult result = ((BindException) e).getBindingResult();
-        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, getDetail(result));
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    public ErrorInfo inputFieldsError(HttpServletRequest req, Exception e) {
+        BindingResult result = e instanceof BindException ? ((BindException) e).getBindingResult() :
+                ((MethodArgumentNotValidException) e).getBindingResult();
+        String detail = result.getFieldErrors().stream()
+                .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+                .collect(Collectors.joining("<br>"));
+        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, detail);
     }
-
-    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorInfo validationError(HttpServletRequest req, Exception e) {
-        BindingResult result = ((MethodArgumentNotValidException) e).getBindingResult();
-        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, getDetail(result));
-    }
-
-
 }

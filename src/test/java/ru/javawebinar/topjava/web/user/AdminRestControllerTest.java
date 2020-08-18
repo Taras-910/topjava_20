@@ -169,4 +169,15 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().is(422));
     }
+
+    @Test
+    void createWithDoubleEmail() throws Exception {
+        User newUser = new User(null, "User2", "admin@gmail.com", "password2", 2005, Role.USER);
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().is(422));
+    }
+
 }

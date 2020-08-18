@@ -1,13 +1,11 @@
 package ru.javawebinar.topjava.util;
 
-import org.springframework.validation.BindingResult;
 import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ValidationUtil {
     private static final Validator validator;
@@ -74,11 +72,5 @@ public class ValidationUtil {
             result = cause;
         }
         return result;
-    }
-
-    public static String getDetail(BindingResult result) {
-        return result.getFieldErrors().stream()
-                        .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                        .collect(Collectors.joining("<br>"));
     }
 }
