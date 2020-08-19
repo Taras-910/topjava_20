@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web.meal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
@@ -16,6 +17,7 @@ import java.time.Month;
 
 import static java.time.LocalDateTime.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,10 +53,12 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_MEAL_ID)
+        MvcResult result = perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_MEAL_ID)
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isNotFound())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("NotFoundException"));
     }
 
     @Test
@@ -67,9 +71,11 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void deleteNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + ADMIN_MEAL_ID)
+        MvcResult result = perform(MockMvcRequestBuilders.delete(REST_URL + ADMIN_MEAL_ID)
                 .with(userHttpBasic(USER)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isNotFound())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("NotFoundException"));
     }
 
     @Test
@@ -79,7 +85,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isNoContent());
-
         MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), updated);
     }
 
@@ -90,7 +95,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal))
                 .with(userHttpBasic(USER)));
-
         Meal created = readFromJson(action, Meal.class);
         int newId = created.id();
         newMeal.setId(newId);
@@ -130,22 +134,28 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     public void updateWithInvalidFields() throws Exception {
         Meal withEmptyDate = new Meal(MEAL1_ID, null, "Обновленный завтрак", 100);
-        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
+        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(withEmptyDate))
                 .with(userHttpBasic(USER)))
                 .andDo(print())
-                .andExpect(status().is(422));
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("MethodArgumentNotValidException"));
     }
 
     @Test
     public void createWithInvalidFields() throws Exception {
         Meal withEmptyDescription = new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), null, -1);
-        perform(MockMvcRequestBuilders.post(REST_URL)
+        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(withEmptyDescription))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().is(422));
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("MethodArgumentNotValidException"));
     }
 }
+
+

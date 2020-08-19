@@ -25,6 +25,11 @@
                     <span class="fa fa-sign-in"></span>
                 </button>
             </form:form>
+            <select class="selectpicker" data-width="fit">
+                <option data-content='<span class="flag-icon flag-icon-us"></span> English'>en</option>
+                <option  data-content='<span class="flag-icon flag-icon-mx"></span> Español'>ru</option>
+            </select>
         </sec:authorize>
     </div>
+
 </nav>

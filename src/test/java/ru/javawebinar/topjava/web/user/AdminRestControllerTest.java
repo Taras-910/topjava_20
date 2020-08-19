@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.UserTestData;
@@ -13,8 +14,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,11 +42,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + 1)
+        MvcResult result = perform(MockMvcRequestBuilders.get(REST_URL + 1)
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print());
+                .andExpect(status().isNotFound())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("NotFoundException"));
     }
 
     @Test
@@ -69,10 +70,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void deleteNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + 1)
+        MvcResult result = perform(MockMvcRequestBuilders.delete(REST_URL + 1)
                 .with(userHttpBasic(ADMIN)))
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print());
+                .andExpect(status().isNotFound())
+                .andDo(print())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("NotFoundException"));
     }
 
     @Test
@@ -88,16 +91,16 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @Test
-    void update() throws Exception {
-        User updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
+     @Test
+     void update() throws Exception {
+        User updated = new User(ADMIN_ID, "UpdatedName", "admin@gmail.com", "admin", 330, Role.ADMIN);
+        perform(MockMvcRequestBuilders.put(REST_URL + ADMIN_ID)
                 .with(userHttpBasic(ADMIN))
-                .content(JsonUtil.writeValue(updated)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(UserTestData.jsonWithPassword(updated, "admin")))
+                .andDo(print())
                 .andExpect(status().isNoContent());
-
-        USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
+        USER_MATCHER.assertMatch(userService.get(ADMIN_ID), updated);
     }
 
     @Test
@@ -133,51 +136,56 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-
         assertFalse(userService.get(USER_ID).isEnabled());
     }
 
     @Test
     void getWithMeals() throws Exception {
         assumeDataJpa();
-        perform(MockMvcRequestBuilders.get(REST_URL + USER_ID + "/with-meals")
-                .with(userHttpBasic(USER)))
+        perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_ID + "/with-meals")
+                .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_WITH_MEALS_MATCHER.contentJson(USER));
+                .andExpect(USER_WITH_MEALS_MATCHER.contentJson(ADMIN));
     }
 
     @Test
     void updateWithInvalidFields() throws Exception {
         User updated = new User(USER_ID, "User", null, null, 2005, Role.USER);
-        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
-                .andExpect(status().is(422));
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("MethodArgumentNotValidException"));
     }
 
     @Test
     void createWithInvalidFields() throws Exception {
-        User newUser = new User(null, null, "user@yandex.ru", "password", 0, Role.USER);
-        perform(MockMvcRequestBuilders.post(REST_URL)
+        User invalidFields = new User(null, null, "user@yandex.ru", "password", 0, Role.USER);
+        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .with(userHttpBasic(ADMIN))
-                .content(UserTestData.jsonWithPassword(newUser, "newPass")))
+                .content(JsonUtil.writeValue(invalidFields))
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().is(422));
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("MethodArgumentNotValidException"));
     }
 
     @Test
     void createWithDoubleEmail() throws Exception {
-        User newUser = new User(null, "User2", "admin@gmail.com", "password2", 2005, Role.USER);
-        perform(MockMvcRequestBuilders.post(REST_URL)
+        User doubleEmail = new User(null, "User2", "admin@gmail.com", "password2", 2005, Role.USER);
+        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(doubleEmail))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().is(422));
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+        assertTrue(result.getResolvedException().getClass().getSimpleName().equalsIgnoreCase("MethodArgumentNotValidException"));
     }
-
 }

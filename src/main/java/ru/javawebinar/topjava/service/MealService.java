@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -45,10 +46,18 @@ public class MealService {
 
     public Meal create(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
+        checkDoubleDateTime(meal, userId);
         return repository.save(meal, userId);
     }
 
     public Meal getWithUser(int id, int userId) {
         return checkNotFoundWithId(repository.getWithUser(id, userId), id);
+    }
+
+    private void checkDoubleDateTime(Meal meal, int userId) {
+        List<Meal> meals = getAll(userId);
+        if (meals.stream().filter(m -> m.getDateTime().equals( meal.getDateTime())).count() != 0) {
+            throw new DataIntegrityViolationException("meal with this dateTime already exists");
+        }
     }
 }
