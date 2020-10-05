@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -69,7 +70,7 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class, PSQLException.class})
     public ErrorInfo bindValidationError(HttpServletRequest req, Exception e) {
         BindingResult result = e instanceof BindException ?
                 ((BindException) e).getBindingResult() : ((MethodArgumentNotValidException) e).getBindingResult();
